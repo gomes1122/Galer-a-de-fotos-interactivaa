@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Galería interactiva - Ejemplo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    /* Contenedor principal */
+    .gallery {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    /* Área de preview */
+    #image {
+      width: 400px;
+      height: 300px;
+      border: 2px solid #ddd;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      box-sizing: border-box;
+      color: #444;
+      text-align: center;
+    }
+
+    /* Miniaturas */
+    .thumbs {
+      display: grid;
+      grid-template-columns: 90px;
+      gap: 10px;
+    }
+    .thumbs img {
+      width: 90px;
+      height: 70px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 1px solid #ccc;
+    }
+    .thumbs img:focus {
+      outline: 2px solid #0077ff;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Galería de fotos interactiva</h1>
+  <p>Pasa el ratón por encima de una miniatura para verla en grande.</p>
+
+  <div class="gallery">
+    <!-- Área donde se actualizará la imagen de fondo y el texto -->
+    <div id="image">Pase el ratón por encima de una imagen para mostrarla aquí</div>
+
+    <!-- Miniaturas -->
+    <div class="thumbs" aria-label="Miniaturas">
+      <!--
+        onmouseover llama a upDate(this),
+        onmouseout llama a deshacer()
+        Puedes cambiar las src a las imágenes que prefieras.
+      -->
+      <img src="https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6?w=800&q=80" alt="Montañas al amanecer" tabindex="0"
+           onmouseover="upDate(this)" onmouseout="deshacer()">
+      <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80" alt="Playa al atardecer" tabindex="0"
+           onmouseover="upDate(this)" onmouseout="deshacer()">
+      <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80" alt="Bosque en la niebla" tabindex="0"
+           onmouseover="upDate(this)" onmouseout="deshacer()">
+      <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80" alt="Ciudad de noche" tabindex="0"
+           onmouseover="upDate(this)" onmouseout="deshacer()">
+    </div>
+  </div>
+
+  <script>
+    // Texto por defecto (usado por deshacer)
+    const DEFAULT_TEXT = "Pase el ratón por encima de una imagen para mostrarla aquí";
+
+    /**
+     * upDate(previewPic)
+     * previewPic: el elemento <img> sobre el que está el ratón.
+     * Debe:
+     *  - registrar en consola el evento y valores (alt y src)
+     *  - actualizar el texto del div#image con el alt
+     *  - cambiar el background-image del div#image a la src de la miniatura
+     */
+    function upDate(previewPic) {
+      // comprobación inicial
+      console.log("upDate() disparada");
+      if (!previewPic) {
+        console.warn("upDate: falta el argumento previewPic");
+        return;
+      }
+
+      // imprimir alt y src para depuración
+      console.log("previewPic.alt =", previewPic.alt);
+      console.log("previewPic.src =", previewPic.src);
+
+      // seleccionar el div donde mostraremos la imagen
+      const imageDiv = document.getElementById('image');
+      if (!imageDiv) {
+        console.error("upDate: no se encontró el elemento con id 'image'");
+        return;
+      }
+
+      // actualizar el texto (puedes usar .innerText o .innerHTML)
+      imageDiv.innerText = previewPic.alt || "";
+
+      // actualizar la imagen de fondo
+      imageDiv.style.backgroundImage = `url('${previewPic.src}')`;
+
+      // Para accesibilidad y contraste: cambiar color de texto si hace falta
+      // (esto es opcional; aquí dejamos el texto en blanco si hay background)
+      imageDiv.style.color = "#ffffff";
+    }
+
+    /**
+     * deshacer()
+     * Debe:
+     *  - restaurar el background-image a url('') (vacío)
+     *  - restaurar el texto por defecto
+     */
+    function deshacer() {
+      console.log("deshacer() disparada");
+
+      const imageDiv = document.getElementById('image');
+      if (!imageDiv) {
+        console.error("deshacer: no se encontró el elemento con id 'image'");
+        return;
+      }
+
+      // restaurar imagen de fondo al valor original vacío
+      imageDiv.style.backgroundImage = "url('')";
+
+      // restaurar texto original
+      imageDiv.innerText = DEFAULT_TEXT;
+
+      // restaurar color de texto
+      imageDiv.style.color = "#444";
+    }
+
+    // Para compatibilidad con ejercicios que esperan un nombre en inglés
+    // (por ejemplo, si la tarea busca unDo()), exponemos un alias.
+    window.unDo = deshacer;
+    // También exponemos en global para pruebas manuales si es necesario
+    window.upDate = upDate;
+
+    // Opcional: si quieres añadir soporte para keyboard (focus / blur)
+    // y no usar onmouseover/onmouseout en el HTML, podrías hacer:
+    // document.querySelectorAll('.thumbs img').forEach(img => {
+    //   img.addEventListener('mouseover', () => upDate(img));
+    //   img.addEventListener('mouseout', deshacer);
+    //   img.addEventListener('focus', () => upDate(img));
+    //   img.addEventListener('blur', deshacer);
+    // });
+  </script>
+</body>
+</html>
